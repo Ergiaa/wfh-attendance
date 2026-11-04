@@ -1,0 +1,18 @@
+{
+  "name": "wfh-attendance",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build:contracts": "npm run build -w @wfh/contracts",
+    "dev:contracts": "npm run dev -w @wfh/contracts",
+    "dev:employees": "npm run start:dev -w employees-service",
+    "dev:attendance": "npm run start:dev -w attendance-service",
+    "dev:gateway": "npm run start:dev -w gateway",
+    "dev:frontend": "npm run dev -w web"
+  }
+}
