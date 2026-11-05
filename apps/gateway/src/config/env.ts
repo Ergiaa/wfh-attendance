@@ -6,8 +6,11 @@ export interface Env {
   CORS_ORIGIN: string;
   JWT_SECRET: string;
   JWT_EXPIRES_IN_SECONDS: number;
+  UPLOAD_DIR: string;
   EMPLOYEES_SERVICE_HOST: string;
   EMPLOYEES_SERVICE_PORT: number;
+  ATTENDANCE_SERVICE_HOST: string;
+  ATTENDANCE_SERVICE_PORT: number;
 }
 
 export const envSchema = Joi.object<Env, true>({
@@ -19,6 +22,9 @@ export const envSchema = Joi.object<Env, true>({
     .integer()
     .positive()
     .default(8 * 60 * 60),
+  UPLOAD_DIR: Joi.string().default('uploads'),
   EMPLOYEES_SERVICE_HOST: Joi.string().hostname().default('localhost'),
   EMPLOYEES_SERVICE_PORT: Joi.number().port().default(4001),
+  ATTENDANCE_SERVICE_HOST: Joi.string().hostname().default('localhost'),
+  ATTENDANCE_SERVICE_PORT: Joi.number().port().default(4002),
 });
