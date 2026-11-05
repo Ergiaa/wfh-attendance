@@ -18,3 +18,18 @@ export interface Paginated<T> {
   page: number;
   limit: number;
 }
+
+// Internal shape returned by attendance-service; photoKey never leaves the gateway.
+export interface AttendanceRecord {
+  id: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  workDate: string;
+  checkedInAt: string;
+  photoKey: string;
+}
+
+export interface AttendanceView extends Omit<AttendanceRecord, 'photoKey'> {
+  photoUrl: string;
+}

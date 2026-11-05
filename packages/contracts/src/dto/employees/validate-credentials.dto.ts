@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-import { NormalizeEmail } from '../transforms';
+import { NormalizeEmail } from '../common/transforms';
 
 export class ValidateCredentialsDto {
   @NormalizeEmail()

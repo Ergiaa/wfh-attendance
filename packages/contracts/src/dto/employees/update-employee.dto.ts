@@ -12,7 +12,7 @@ import {
 } from 'class-validator';
 import { Role } from '../../role';
 
-import { NormalizeEmail, Trim } from '../transforms';
+import { NormalizeEmail, Trim } from '../common/transforms';
 
 // employeeCode is deliberately not updatable
 export class UpdateEmployeeDto {

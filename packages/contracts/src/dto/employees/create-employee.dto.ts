@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Role } from '../../role';
 
-import { NormalizeEmail, Trim } from '../transforms';
+import { NormalizeEmail, Trim } from '../common/transforms';
 
 export class CreateEmployeeDto {
   @Trim()

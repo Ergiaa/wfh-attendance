@@ -1,22 +1,9 @@
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { Trim } from '../transforms';
+import { PaginationDto } from '../common/pagination.dto';
+import { Trim } from '../common/transforms';
 
-export class ListEmployeesDto {
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page: number = 1;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  limit: number = 10;
-
+export class ListEmployeesDto extends PaginationDto {
   @IsOptional()
   @Trim()
   @IsString()

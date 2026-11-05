@@ -10,8 +10,8 @@ export interface ServiceEnv {
   DB_NAME: string;
 }
 
-export function serviceEnvSchema(defaults: { port: number }): Joi.ObjectSchema<ServiceEnv> {
-  return Joi.object<ServiceEnv, true>({
+export function serviceEnvKeys(defaults: { port: number }): Joi.StrictSchemaMap<ServiceEnv> {
+  return {
     NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
     PORT: Joi.number().port().default(defaults.port),
     DB_HOST: Joi.string().required(),
@@ -19,5 +19,9 @@ export function serviceEnvSchema(defaults: { port: number }): Joi.ObjectSchema<S
     DB_USER: Joi.string().required(),
     DB_PASS: Joi.string().required(),
     DB_NAME: Joi.string().required(),
-  });
+  };
+}
+
+export function serviceEnvSchema(defaults: { port: number }): Joi.ObjectSchema<ServiceEnv> {
+  return Joi.object<ServiceEnv, true>(serviceEnvKeys(defaults));
 }

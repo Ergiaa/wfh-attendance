@@ -10,4 +10,5 @@ export const ATTENDANCE = {
   checkIn: { cmd: 'attendance.checkIn' },
   findMine: { cmd: 'attendance.findMine' },
   findAll: { cmd: 'attendance.findAll' },
+  findOne: { cmd: 'attendance.findOne' },
 } as const;

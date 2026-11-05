@@ -14,6 +14,7 @@ import type {
   ValidateCredentialsDto,
 } from '@wfh/contracts/dto';
 
+import { escapeLike } from '@wfh/nest-common/microservice';
 import { compare, hash } from 'bcrypt';
 import { FindOptionsWhere, Like, Not, Repository } from 'typeorm';
 
@@ -119,10 +120,6 @@ export class EmployeesService {
 function searchConditions(search: string): FindOptionsWhere<Employee>[] {
   const pattern = Like(`%${escapeLike(search)}%`);
   return [{ name: pattern }, { email: pattern }, { employeeCode: pattern }];
-}
-
-function escapeLike(value: string): string {
-  return value.replace(/[\\%_]/g, '\\$&');
 }
 
 function omitUndefined<T extends object>(value: T): Partial<T> {
