@@ -7,5 +7,5 @@
   "env": {
     "node": true
   },
-  "ignorePatterns": ["**/dist/**", "**/node_modules/**", "**/coverage/**"]
+  "ignorePatterns": ["**/dist/**", "**/dist-typeorm/**", "**/node_modules/**", "**/coverage/**"]
 }

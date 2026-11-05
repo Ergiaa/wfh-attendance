@@ -32,6 +32,10 @@ export class EmployeesClient {
     return sendRpc(this.client, EMPLOYEES.update, payload);
   }
 
+  remove(id: string): Promise<EmployeeView> {
+    return sendRpc(this.client, EMPLOYEES.remove, { id });
+  }
+
   validate(dto: ValidateCredentialsDto): Promise<EmployeeView> {
     return sendRpc(this.client, EMPLOYEES.validate, dto);
   }

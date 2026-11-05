@@ -35,6 +35,11 @@ export class EmployeesController {
     return this.employeesService.update(payload);
   }
 
+  @MessagePattern(EMPLOYEES.remove)
+  remove(@Payload() { id }: EmployeeIdDto): Promise<EmployeeView> {
+    return this.employeesService.remove(id);
+  }
+
   @MessagePattern(EMPLOYEES.validate)
   validate(@Payload() dto: ValidateCredentialsDto): Promise<EmployeeView> {
     return this.employeesService.validate(dto);

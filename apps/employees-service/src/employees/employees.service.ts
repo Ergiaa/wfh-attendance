@@ -80,6 +80,11 @@ export class EmployeesService {
     return toEmployeeView(await this.employees.save(employee));
   }
 
+  async remove(id: string): Promise<EmployeeView> {
+    const employee = await this.findOrFail(id);
+    return toEmployeeView(await this.employees.softRemove(employee));
+  }
+
   async validate({ email, password }: ValidateCredentialsDto): Promise<EmployeeView> {
     const employee = await this.employees
       .createQueryBuilder('employee')
@@ -103,15 +108,16 @@ export class EmployeesService {
     return employee;
   }
 
+  // Deleted rows still hold their code and email in the unique indexes, so they count as taken.
   private async assertCodeAvailable(employeeCode: string): Promise<void> {
-    if (await this.employees.existsBy({ employeeCode })) {
+    if (await this.employees.exists({ where: { employeeCode }, withDeleted: true })) {
       throw new ConflictException('Employee code is already in use');
     }
   }
 
   private async assertEmailAvailable(email: string, exceptId?: string): Promise<void> {
     const where: FindOptionsWhere<Employee> = exceptId ? { email, id: Not(exceptId) } : { email };
-    if (await this.employees.existsBy(where)) {
+    if (await this.employees.exists({ where, withDeleted: true })) {
       throw new ConflictException('Email is already in use');
     }
   }

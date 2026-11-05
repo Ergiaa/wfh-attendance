@@ -3,6 +3,7 @@ export const EMPLOYEES = {
   findAll: { cmd: 'employees.findAll' },
   findOne: { cmd: 'employees.findOne' },
   update: { cmd: 'employees.update' },
+  remove: { cmd: 'employees.remove' },
   validate: { cmd: 'employees.validate' },
 } as const;
 

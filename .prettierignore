@@ -1,4 +1,5 @@
 dist
+dist-typeorm
 coverage
 node_modules
 package-lock.json

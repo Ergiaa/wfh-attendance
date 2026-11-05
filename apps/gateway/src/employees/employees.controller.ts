@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Param,
@@ -55,5 +56,14 @@ export class EmployeesController {
       throw new ForbiddenException('You cannot deactivate or demote your own account');
     }
     return this.employees.update(Object.assign(dto, { id }));
+  }
+
+  @Delete(':id')
+  @ResponseMessage('Employee deleted')
+  remove(@CurrentUser() user: AuthUser, @Param() { id }: EmployeeIdDto): Promise<EmployeeView> {
+    if (id === user.id) {
+      throw new ForbiddenException('You cannot delete your own account');
+    }
+    return this.employees.remove(id);
   }
 }
