@@ -7,6 +7,8 @@
     "apps/*"
   ],
   "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "npm run build:packages && concurrently --names contracts,common,employees,attendance,gateway,web --prefix-colors gray,gray,blue,magenta,green,cyan \"npm run dev -w @wfh/contracts\" \"npm run dev -w @wfh/nest-common\" \"npm run start:dev -w employees-service\" \"npm run start:dev -w attendance-service\" \"npm run start:dev -w gateway\" \"npm run dev -w web\"",
     "build:packages": "npm run build -w @wfh/contracts -w @wfh/nest-common",
     "dev:contracts": "npm run dev -w @wfh/contracts",
     "dev:nest-common": "npm run dev -w @wfh/nest-common",
@@ -19,11 +21,12 @@
     "lint": "oxlint --type-aware apps packages",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:up": "docker compose up -d",
+    "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
     "db:seed": "npm run build:packages && npm run seed:admin -w employees-service"
   },
   "devDependencies": {
+    "concurrently": "^10.0.6",
     "oxlint": "^1.91.0",
     "oxlint-tsgolint": "^7.0.2001",
     "prettier": "^3.4.2"
