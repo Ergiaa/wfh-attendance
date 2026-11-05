@@ -11,7 +11,8 @@
     "start:prod": "node dist/main",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "test:cov": "vitest run --coverage --passWithNoTests"
+    "test:cov": "vitest run --coverage --passWithNoTests",
+    "seed:admin": "nest start --entryFile seed/seed-admin"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
