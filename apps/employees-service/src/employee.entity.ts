@@ -1,0 +1,41 @@
+import {
+  BeforeInsert, Column, CreateDateColumn, Entity,
+  PrimaryColumn, UpdateDateColumn,
+} from 'typeorm';
+
+import { v7 as uuidv7 } from 'uuid';
+
+@Entity('employees')
+export class Employee {
+  @PrimaryColumn({ type: 'uuid', length: 36 })
+  id: string;
+
+  @BeforeInsert()
+  generateId(): void {
+    this.id ??= uuidv7();
+  }
+
+  @Column({ name: 'employee_code', type: 'varchar', length: 20, unique: true })
+  employeeCode: string;
+
+  @Column({ type: 'varchar', length: 100 })
+  name: string;
+
+  @Column({ type: 'varchar', length: 150, unique: true })
+  email: string;
+
+  @Column({ name: 'password_hash', type: 'varchar', length: 100, select: false })
+  passwordHash: string;
+
+  @Column({ type: 'varchar', length: 20, default: 'EMPLOYEE' })
+  role: string;
+
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  isActive: boolean;
+
+  @CreateDateColumn({ name: 'created_at', type: 'datetime', precision: 6 })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at', type: 'datetime', precision: 6 })
+  updatedAt: Date;
+}
