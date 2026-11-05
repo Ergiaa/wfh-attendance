@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsOptional,
   IsString,
+  IsUUID,
   Length,
   MaxLength,
   MinLength,
@@ -12,10 +13,9 @@ import {
 import { Role } from '../../role';
 
 import { NormalizeEmail, Trim } from '../transforms';
-import { EmployeeIdDto } from './employee-id.dto';
 
 // employeeCode is deliberately not updatable
-export class UpdateEmployeeDto extends EmployeeIdDto {
+export class UpdateEmployeeDto {
   @IsOptional()
   @Trim()
   @IsString()
@@ -41,4 +41,9 @@ export class UpdateEmployeeDto extends EmployeeIdDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+}
+
+export class UpdateEmployeePayload extends UpdateEmployeeDto {
+  @IsUUID('7')
+  id: string;
 }
