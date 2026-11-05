@@ -1,18 +1,26 @@
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
+import { AsyncMicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ValidationPipe } from '@nestjs/common';
 
 import { EmployeesModule } from './employees.module';
+import { rpcValidationExceptionFactory } from './common/validation-exception.factory';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    EmployeesModule,
-    {
+  const app = await NestFactory.createMicroservice<AsyncMicroserviceOptions>(EmployeesModule, {
+    inject: [ConfigService],
+    useFactory: (config: ConfigService) => ({
       transport: Transport.TCP,
-      options: { host: '0.0.0.0', port: Number(process.env.PORT ?? 4001) },
-    },
+      options: { host: '0.0.0.0', port: config.getOrThrow<number>('PORT') },
+    }),
+  });
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      exceptionFactory: rpcValidationExceptionFactory,
+    }),
   );
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   await app.listen();
 }
 void bootstrap();

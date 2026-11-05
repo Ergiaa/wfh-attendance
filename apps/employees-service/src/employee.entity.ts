@@ -1,9 +1,14 @@
 import {
-  BeforeInsert, Column, CreateDateColumn, Entity,
-  PrimaryColumn, UpdateDateColumn,
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 import { v7 as uuidv7 } from 'uuid';
+import { Role } from '@wfh/contracts';
 
 @Entity('employees')
 export class Employee {
@@ -27,8 +32,8 @@ export class Employee {
   @Column({ name: 'password_hash', type: 'varchar', length: 100, select: false })
   passwordHash: string;
 
-  @Column({ type: 'varchar', length: 20, default: 'EMPLOYEE' })
-  role: string;
+  @Column({ type: 'enum', enum: Role, default: Role.EMPLOYEE })
+  role: Role;
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;

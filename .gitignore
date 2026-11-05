@@ -3,6 +3,7 @@ node_modules/
 
 # Build output
 dist/
+dist-ssr/
 coverage/
 *.tsbuildinfo
 
@@ -10,6 +11,7 @@ coverage/
 .env
 .env.*
 !.env.example
+*.local
 
 # Logs
 *.log
@@ -19,6 +21,3 @@ npm-debug.log*
 .DS_Store
 .idea/
 .vscode/
-
-# Docker
-mysql_data/

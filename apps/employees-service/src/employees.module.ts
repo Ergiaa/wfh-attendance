@@ -36,4 +36,4 @@ import { Employee } from './employee.entity';
     TypeOrmModule.forFeature([Employee]),
   ],
 })
-export class EmployeesModule { }
+export class EmployeesModule {}
