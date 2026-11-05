@@ -1,21 +1,107 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+/*
+ * Components use these semantic tokens (bg-surface, text-fg-muted, bg-primary, ...) rather than
+ * raw palette colors, so dark mode and any rebrand are a change here only.
+ */
 :root {
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
-  line-height: 1.5;
-  color-scheme: light dark;
+  --bg: oklch(0.985 0.002 247);
+  --surface: oklch(1 0 0);
+  --surface-muted: oklch(0.967 0.003 265);
+  --border: oklch(0.922 0.006 265);
+  --fg: oklch(0.21 0.034 265);
+  --fg-muted: oklch(0.551 0.027 264);
+
+  --primary: oklch(0.511 0.163 268);
+  --primary-hover: oklch(0.457 0.165 268);
+  --primary-fg: oklch(1 0 0);
+  --primary-soft: oklch(0.962 0.018 272);
+
+  --success: oklch(0.527 0.137 150);
+  --success-soft: oklch(0.962 0.044 157);
+  --warning: oklch(0.555 0.146 49);
+  --warning-soft: oklch(0.973 0.071 103);
+  --danger: oklch(0.577 0.215 27);
+  --danger-hover: oklch(0.505 0.213 27);
+  --danger-soft: oklch(0.971 0.013 17);
+
+  --ring: oklch(0.585 0.204 268);
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: oklch(0.145 0.015 265);
+    --surface: oklch(0.19 0.02 265);
+    --surface-muted: oklch(0.235 0.022 265);
+    --border: oklch(0.3 0.025 265);
+    --fg: oklch(0.967 0.003 265);
+    --fg-muted: oklch(0.707 0.022 261);
+
+    --primary: oklch(0.673 0.182 276);
+    --primary-hover: oklch(0.723 0.16 276);
+    --primary-fg: oklch(0.145 0.015 265);
+    --primary-soft: oklch(0.28 0.07 272);
+
+    --success: oklch(0.765 0.177 160);
+    --success-soft: oklch(0.27 0.05 160);
+    --warning: oklch(0.828 0.189 84);
+    --warning-soft: oklch(0.29 0.06 70);
+    --danger: oklch(0.704 0.191 22);
+    --danger-hover: oklch(0.75 0.17 22);
+    --danger-soft: oklch(0.28 0.07 22);
+
+    --ring: oklch(0.673 0.182 276);
+  }
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-soft: var(--danger-soft);
+
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  html {
+    @apply bg-bg font-sans text-fg antialiased;
+  }
+
+  body {
+    @apply min-h-dvh;
+  }
+
+  /* Tailwind v4 defaults borders to currentColor; the token keeps unstyled borders subtle. */
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
 }
