@@ -6,6 +6,7 @@ import { request } from './client';
 export const employeeKeys = {
   all: ['employees'] as const,
   list: (query: ListEmployeesDto) => ['employees', 'list', query] as const,
+  detail: (id: string) => ['employees', 'detail', id] as const,
 };
 
 export function fetchEmployees(
@@ -25,4 +26,8 @@ export function updateEmployee(id: string, dto: UpdateEmployeeDto): Promise<Empl
 
 export function deleteEmployee(id: string): Promise<EmployeeView> {
   return request(`/employees/${id}`, { method: 'DELETE' });
+}
+
+export function fetchEmployee(id: string, signal?: AbortSignal): Promise<EmployeeView> {
+  return request(`/employees/${id}`, { signal });
 }

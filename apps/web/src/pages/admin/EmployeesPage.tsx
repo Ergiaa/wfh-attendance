@@ -1,12 +1,13 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { EmployeeView } from '@wfh/contracts';
-import { ClipboardList, Pencil, Search, Trash2, UserCheck, UserPlus, UserX, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ClipboardList, Pencil, Search, Trash2, UserCheck, UserPlus, UserX } from 'lucide-react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 
 import { deleteEmployee, employeeKeys, fetchEmployees, updateEmployee } from '../../api/employees';
 import { useCurrentUser } from '../../auth/auth-context';
 import { PageHeader } from '../../components/PageHeader';
+import { SearchInput } from '../../components/SearchInput';
 import { useToast } from '../../components/toast/toast-context';
 import { Alert } from '../../components/ui/Alert';
 import { Badge } from '../../components/ui/Badge';
@@ -18,7 +19,6 @@ import { Pagination } from '../../components/ui/Pagination';
 import { Table, type Column } from '../../components/ui/Table';
 import { paths } from '../../lib/paths';
 import { isHrdAdmin, ROLE_LABELS } from '../../lib/roles';
-import { useDebouncedValue } from '../../lib/use-debounced-value';
 import { useListParams } from '../../lib/use-list-params';
 import { formatDate } from '../../lib/work-date';
 import { EmployeeFormModal } from './EmployeeFormModal';
@@ -33,14 +33,6 @@ export function EmployeesPage() {
   const toast = useToast();
   const { page, get, update, setPage } = useListParams();
   const search = get('search');
-
-  const [searchInput, setSearchInput] = useState(search);
-  const debouncedSearch = useDebouncedValue(searchInput.trim());
-  useEffect(() => {
-    if (debouncedSearch !== search) {
-      update({ search: debouncedSearch });
-    }
-  }, [debouncedSearch, search, update]);
 
   // `undefined` = closed, `null` = creating, an employee = editing.
   const [editing, setEditing] = useState<EmployeeView | null | undefined>(undefined);
@@ -178,10 +170,7 @@ export function EmployeesPage() {
     },
   ];
 
-  const clearSearch = () => {
-    setSearchInput('');
-    update({ search: '' });
-  };
+  const clearSearch = () => update({ search: '' });
 
   return (
     <>
@@ -196,31 +185,13 @@ export function EmployeesPage() {
         }
       />
 
-      <div className="relative mb-4 max-w-sm">
-        <Search
-          aria-hidden
-          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-fg-muted"
-        />
-        <input
-          type="search"
-          value={searchInput}
-          onChange={(event) => setSearchInput(event.target.value)}
-          placeholder="Search name, email or code"
-          aria-label="Search employees"
-          maxLength={100}
-          className="h-10 w-full rounded-lg border bg-surface pr-9 pl-9 text-sm placeholder:text-fg-muted focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/20 focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden"
-        />
-        {searchInput && (
-          <button
-            type="button"
-            onClick={clearSearch}
-            aria-label="Clear search"
-            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-md p-1 text-fg-muted hover:bg-surface-muted hover:text-fg"
-          >
-            <X aria-hidden className="size-4" />
-          </button>
-        )}
-      </div>
+      <SearchInput
+        value={search}
+        onSearch={(value) => update({ search: value })}
+        label="Search employees"
+        placeholder="Search name, email or code"
+        className="mb-4 max-w-sm"
+      />
 
       {employees.isError ? (
         <Alert tone="danger" title="Couldn't load employees">

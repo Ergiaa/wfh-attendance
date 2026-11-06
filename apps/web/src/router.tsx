@@ -5,7 +5,7 @@ import { AppLayout } from './layouts/AppLayout';
 import { HRD_ADMIN } from './lib/roles';
 import { EmployeesPage } from './pages/admin/EmployeesPage';
 import { CheckInPage } from './pages/CheckInPage';
-import { ComingSoon } from './pages/ComingSoon';
+import { AttendancePage } from './pages/admin/AttendancePage';
 import { LoginPage } from './pages/LoginPage';
 import { MyAttendancePage } from './pages/MyAttendancePage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -33,7 +33,7 @@ export const router = createBrowserRouter([
                 element: <RequireRole role={HRD_ADMIN} />,
                 children: [
                   { path: 'employees', element: <EmployeesPage /> },
-                  { path: 'attendance', element: <ComingSoon title="Attendance" /> },
+                  { path: 'attendance', element: <AttendancePage /> },
                 ],
               },
             ],

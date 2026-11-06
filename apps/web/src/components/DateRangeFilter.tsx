@@ -37,6 +37,11 @@ export function DateRangeFilter({ dateFrom, dateTo, onChange }: DateRangeFilterP
         onChange={(event) => onChange({ dateFrom, dateTo: event.target.value })}
         className="w-40"
       />
+      {(dateFrom !== today || dateTo !== today) && (
+        <Button variant="secondary" onClick={() => onChange({ dateFrom: today, dateTo: today })}>
+          Today
+        </Button>
+      )}
       {(dateFrom || dateTo) && (
         <Button variant="ghost" onClick={() => onChange({ dateFrom: '', dateTo: '' })}>
           <X aria-hidden />
