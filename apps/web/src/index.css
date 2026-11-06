@@ -124,6 +124,11 @@
     @apply outline-2 outline-offset-2 outline-ring;
   }
 
+  /* A native modal dialog doesn't stop the page behind it from scrolling. */
+  html:has(dialog[open]:modal) {
+    overflow: hidden;
+  }
+
   ::selection {
     @apply bg-accent text-accent-fg;
   }
