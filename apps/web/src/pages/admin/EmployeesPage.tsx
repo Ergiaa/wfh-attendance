@@ -71,23 +71,31 @@ export function EmployeesPage() {
       id: 'employee',
       header: 'Employee',
       cell: (row) => (
-        <div className="flex flex-col">
+        <div className="flex max-w-48 flex-col sm:max-w-none">
           <span className="flex items-center gap-2 font-medium">
-            {row.name}
+            <span className="truncate">{row.name}</span>
             {row.id === currentUser.id && <Badge tone="primary">You</Badge>}
           </span>
-          <span className="text-xs text-fg-muted">{row.email}</span>
+          <span className="truncate text-xs text-fg-muted">{row.email}</span>
+          {/* Phones drop the code, role and status columns so the actions stay on screen. */}
+          <span className="mt-1 flex items-center gap-1.5 sm:hidden">
+            <span className="font-mono text-xs text-fg-muted">{row.employeeCode}</span>
+            {isHrdAdmin(row) && <Badge tone="primary">{ROLE_LABELS[row.role]}</Badge>}
+            {!row.isActive && <Badge>Inactive</Badge>}
+          </span>
         </div>
       ),
     },
     {
       id: 'code',
       header: 'Code',
+      className: 'hidden sm:table-cell',
       cell: (row) => <span className="font-mono text-xs">{row.employeeCode}</span>,
     },
     {
       id: 'role',
       header: 'Role',
+      className: 'hidden sm:table-cell',
       cell: (row) => (
         <Badge tone={isHrdAdmin(row) ? 'primary' : 'neutral'}>{ROLE_LABELS[row.role]}</Badge>
       ),
@@ -95,6 +103,7 @@ export function EmployeesPage() {
     {
       id: 'status',
       header: 'Status',
+      className: 'hidden sm:table-cell',
       cell: (row) =>
         row.isActive ? <Badge tone="success">Active</Badge> : <Badge>Inactive</Badge>,
     },
@@ -193,7 +202,7 @@ export function EmployeesPage() {
         className="mb-4 max-w-sm"
       />
 
-      {employees.isError ? (
+      {employees.isError && !employees.data ? (
         <Alert tone="danger" title="Couldn't load employees">
           <p>{employees.error.message}</p>
           <Button

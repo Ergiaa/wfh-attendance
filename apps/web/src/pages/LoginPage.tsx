@@ -30,6 +30,7 @@ export function LoginPage() {
 
   return (
     <main className="grid min-h-dvh place-items-center bg-surface-muted/50 p-4">
+      <title>Sign in · WFH Attendance</title>
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
           <span className="grid size-12 place-items-center rounded-xl bg-accent text-accent-fg shadow-sm">

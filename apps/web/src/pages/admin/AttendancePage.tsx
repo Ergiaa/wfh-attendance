@@ -144,7 +144,7 @@ export function AttendancePage() {
         )}
       </div>
 
-      {attendance.isError ? (
+      {attendance.isError && !attendance.data ? (
         <Alert tone="danger" title="Couldn't load attendance">
           <p>{attendance.error.message}</p>
           <div className="mt-2 flex gap-2">

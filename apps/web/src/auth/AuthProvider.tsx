@@ -3,11 +3,13 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 
 import { authKeys, fetchMe, login as loginRequest, type Credentials } from '../api/auth';
 import { onUnauthorized } from '../api/client';
+import { useToast } from '../components/toast/toast-context';
 import { AuthContext, type AuthContextValue, type AuthState } from './auth-context';
 import { clearToken, getToken, setToken } from './session';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [token, setTokenState] = useState(getToken);
 
   // Restores the user behind a stored token; after login the cache is seeded so this never fires.
@@ -25,7 +27,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient.clear();
   }, [queryClient]);
 
-  useEffect(() => onUnauthorized(logout), [logout]);
+  useEffect(
+    () =>
+      onUnauthorized(() => {
+        // Parallel requests can all 401; only the first one still finds a token to clear.
+        if (getToken() === null) {
+          return;
+        }
+        logout();
+        toast.show({
+          title: 'Your session has expired',
+          description: 'Sign in again to continue.',
+        });
+      }),
+    [logout, toast],
+  );
 
   const login = useCallback(
     async (credentials: Credentials) => {

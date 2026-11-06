@@ -80,7 +80,7 @@ export function MyAttendancePage() {
         />
       </div>
 
-      {attendance.isError ? (
+      {attendance.isError && !attendance.data ? (
         <Alert tone="danger" title="Couldn't load your attendance">
           <p>{attendance.error.message}</p>
           <Button
