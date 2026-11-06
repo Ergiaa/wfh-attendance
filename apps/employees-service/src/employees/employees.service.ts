@@ -108,16 +108,15 @@ export class EmployeesService {
     return employee;
   }
 
-  // Deleted rows still hold their code and email in the unique indexes, so they count as taken.
   private async assertCodeAvailable(employeeCode: string): Promise<void> {
-    if (await this.employees.exists({ where: { employeeCode }, withDeleted: true })) {
+    if (await this.employees.existsBy({ employeeCode })) {
       throw new ConflictException('Employee code is already in use');
     }
   }
 
   private async assertEmailAvailable(email: string, exceptId?: string): Promise<void> {
     const where: FindOptionsWhere<Employee> = exceptId ? { email, id: Not(exceptId) } : { email };
-    if (await this.employees.exists({ where, withDeleted: true })) {
+    if (await this.employees.existsBy(where)) {
       throw new ConflictException('Email is already in use');
     }
   }

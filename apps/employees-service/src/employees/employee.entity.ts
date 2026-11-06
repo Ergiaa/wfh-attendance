@@ -13,8 +13,8 @@ import { v7 as uuidv7 } from 'uuid';
 import { Role } from '@wfh/contracts';
 
 @Entity('employees')
-@Index('uq_employees_employee_code', ['employeeCode'], { unique: true })
-@Index('uq_employees_email', ['email'], { unique: true })
+@Index('uq_employees_employee_code', ['employeeCode', 'notDeleted'], { unique: true })
+@Index('uq_employees_email', ['email', 'notDeleted'], { unique: true })
 export class Employee {
   @PrimaryColumn({ type: 'uuid', length: 36 })
   id: string;
@@ -50,4 +50,18 @@ export class Employee {
 
   @DeleteDateColumn({ name: 'deleted_at', type: 'datetime', precision: 6, nullable: true })
   deletedAt: Date | null;
+
+  // NULL once soft-deleted; MySQL allows repeated NULLs in a unique index, so pairing this with
+  // code/email enforces uniqueness among live rows only and frees both up for reuse after deletion.
+  @Column({
+    name: 'not_deleted',
+    type: 'tinyint',
+    nullable: true,
+    asExpression: 'IF(`deleted_at` IS NULL, 1, NULL)',
+    generatedType: 'VIRTUAL',
+    insert: false,
+    update: false,
+    select: false,
+  })
+  notDeleted: 1 | null;
 }

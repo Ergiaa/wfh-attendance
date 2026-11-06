@@ -1,4 +1,5 @@
 import { InitialSchema1793836800000 } from './1793836800000-InitialSchema';
+import { ScopeUniqueIndexesToLiveRows1794268800000 } from './1794268800000-ScopeUniqueIndexesToLiveRows';
 
 // Listed explicitly rather than globbed so the same list works from src and dist.
-export const migrations = [InitialSchema1793836800000];
+export const migrations = [InitialSchema1793836800000, ScopeUniqueIndexesToLiveRows1794268800000];
