@@ -24,13 +24,16 @@
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
     "db:seed": "npm run build:packages && npm run seed:admin -w employees-service",
-    "db:reset": "docker compose down -v && npm run db:up && npm run db:seed"
+    "db:reset": "docker compose down -v && npm run db:up && npm run db:seed",
+    "db:seed:demo": "node scripts/seed-demo.mjs"
   },
   "devDependencies": {
     "concurrently": "^10.0.6",
+    "mysql2": "^3.24.6",
     "oxlint": "^1.91.0",
     "oxlint-tsgolint": "^7.0.2001",
     "prettier": "^3.4.2",
-    "prettier-plugin-tailwindcss": "^0.8.1"
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "uuid": "^14.0.3"
   }
 }
