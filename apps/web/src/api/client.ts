@@ -14,12 +14,11 @@ export class ApiError extends Error {
   }
 }
 
-type QueryValue = string | number | boolean | null | undefined;
-
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
   body?: unknown;
-  query?: Record<string, QueryValue>;
+  /** Flat object of query parameters; undefined, null and empty-string values are omitted. */
+  query?: object;
   signal?: AbortSignal;
 }
 
@@ -35,13 +34,20 @@ export function onUnauthorized(handler: () => void): () => void {
 }
 
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const response = await send(path, options);
+  const response = await send(`/api${path}`, options);
   const body = (await response.json()) as ApiResponse<T>;
   return body.data;
 }
 
+// For URLs the API hands out already prefixed (e.g. photoUrl), which need the auth header and so
+// can't be used as a plain <img src>.
+export async function requestBlob(url: string, signal?: AbortSignal): Promise<Blob> {
+  const response = await send(url, { signal });
+  return response.blob();
+}
+
 async function send(
-  path: string,
+  url: string,
   { method = 'GET', body, query, signal }: RequestOptions,
 ): Promise<Response> {
   const token = getToken();
@@ -60,7 +66,7 @@ async function send(
 
   let response: Response;
   try {
-    response = await fetch(`/api${path}${toQueryString(query)}`, {
+    response = await fetch(`${url}${toQueryString(query)}`, {
       method,
       headers,
       body: payload,
