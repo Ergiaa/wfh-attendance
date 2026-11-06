@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/dist-typeorm
+**/*.tsbuildinfo
+**/.env
+**/.env.*
+!**/.env.example
+**/uploads
+.git
+docs
+*.md

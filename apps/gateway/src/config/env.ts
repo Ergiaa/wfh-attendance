@@ -7,6 +7,9 @@ export interface Env {
   JWT_SECRET: string;
   JWT_EXPIRES_IN_SECONDS: number;
   UPLOAD_DIR: string;
+  TRUST_PROXY: boolean;
+  /** Unset means on, except when NODE_ENV=production. */
+  API_DOCS_ENABLED?: boolean;
   EMPLOYEES_SERVICE_HOST: string;
   EMPLOYEES_SERVICE_PORT: number;
   ATTENDANCE_SERVICE_HOST: string;
@@ -23,6 +26,9 @@ export const envSchema = Joi.object<Env, true>({
     .positive()
     .default(8 * 60 * 60),
   UPLOAD_DIR: Joi.string().default('uploads'),
+  // Behind a reverse proxy, client IPs (used by rate limiting) come from X-Forwarded-For.
+  TRUST_PROXY: Joi.boolean().default(false),
+  API_DOCS_ENABLED: Joi.boolean(),
   EMPLOYEES_SERVICE_HOST: Joi.string().hostname().default('localhost'),
   EMPLOYEES_SERVICE_PORT: Joi.number().port().default(4001),
   ATTENDANCE_SERVICE_HOST: Joi.string().hostname().default('localhost'),

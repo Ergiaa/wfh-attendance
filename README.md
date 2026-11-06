@@ -29,9 +29,28 @@ To run a single service in its own terminal instead, use `npm run dev:employees`
 `dev:attendance`, `dev:gateway` or `dev:web` (each builds the shared packages first).
 `npm run db:down` stops MySQL; `npm run db:reset` wipes its volume and re-seeds.
 
+### Run everything with Docker
+
+Needs only Docker (with Compose v2); no Node or `npm run setup` on the host.
+
+```bash
+docker compose up --build -d   # MySQL, both services, gateway and web
+docker compose down            # stop (add -v to also wipe the database and photos)
+```
+
+Open <http://localhost:8080>. nginx serves the built web app and proxies `/api` to the gateway,
+so the API and its docs are at `http://localhost:8080/api` too. On first boot the employees service
+runs migrations and seeds the HRD admin; later boots skip the seed. Check-in photos are kept in the
+`uploads` volume.
+
+Defaults are set for a local demo. Override them with shell variables or a root `.env`:
+`JWT_SECRET` (**set this outside a demo**), `WEB_PORT` (8080), `SEED_ADMIN_EMAIL`,
+`SEED_ADMIN_PASSWORD`, `WORK_TIMEZONE` and `API_DOCS_ENABLED`. `npm run db:seed:demo` targets the
+`npm run dev` setup, not this stack.
+
 ## Login credentials
 
-Open <http://localhost:5173>. `npm run setup` creates the HRD admin (defaults from `SEED_ADMIN_*`
+Open <http://localhost:5173> (or <http://localhost:8080> with Docker). `npm run setup` creates the HRD admin (defaults from `SEED_ADMIN_*`
 in `apps/employees-service/.env`):
 
 | Role      | Email             | Password       |
@@ -92,8 +111,9 @@ attendance.
 
 ## API
 
-Interactive docs (Swagger UI) are at <http://localhost:3000/api/docs>, with the OpenAPI JSON at
-`/api/docs/json`; both are disabled when `NODE_ENV=production`. Log in via `POST /auth/login`, then
+Interactive docs (Swagger UI) are at <http://localhost:3000/api/docs> (<http://localhost:8080/api/docs>
+with Docker), with the OpenAPI JSON at `/api/docs/json`. They're off by default when
+`NODE_ENV=production`; set `API_DOCS_ENABLED` to override. Log in via `POST /auth/login`, then
 paste the `accessToken` into **Authorize**.
 
 All routes are under `/api`, need `Authorization: Bearer <token>` unless marked public, and respond
