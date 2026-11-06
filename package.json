@@ -22,9 +22,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:up": "docker compose up -d --wait db",
-    "db:down": "docker compose down",
+    "db:down": "docker compose --profile demo down",
     "db:seed": "npm run build:packages && npm run seed:admin -w employees-service",
-    "db:reset": "docker compose down -v && npm run db:up && npm run db:seed",
+    "db:reset": "docker compose --profile demo down -v && npm run db:up && npm run db:seed",
     "db:seed:demo": "node scripts/seed-demo.mjs"
   },
   "devDependencies": {

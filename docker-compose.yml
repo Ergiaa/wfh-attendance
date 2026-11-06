@@ -1,5 +1,22 @@
-# `docker compose up --build` runs the whole stack at http://localhost:8080.
+# `docker compose up --build` runs the whole stack at http://localhost:8080; add `--profile demo`
+# to also load demo employees and attendance history.
 # `npm run dev` uses only the `db` service (via `npm run db:up`) and runs the apps on the host.
+
+x-admin-env: &admin-env
+  SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@wfh.local}
+  SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-ChangeMe123!}
+
+x-attendance-db-env: &attendance-db-env
+  DB_HOST: db
+  DB_USER: attendance_user
+  DB_PASS: attendance_pass
+  DB_NAME: attendance_db
+  WORK_TIMEZONE: ${WORK_TIMEZONE:-Asia/Jakarta}
+
+x-healthcheck: &healthcheck
+  interval: 5s
+  timeout: 3s
+  retries: 20
 
 x-service: &service
   restart: unless-stopped
@@ -35,16 +52,19 @@ services:
     depends_on:
       db: { condition: service_healthy }
     environment:
+      <<: *admin-env
       DB_HOST: db
       DB_USER: employees_user
       DB_PASS: employees_pass
       DB_NAME: employees_db
-      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@wfh.local}
-      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-ChangeMe123!}
       SEED_ADMIN_NAME: ${SEED_ADMIN_NAME:-HRD Admin}
       SEED_ADMIN_CODE: ${SEED_ADMIN_CODE:-HRD001}
     # The seed is idempotent (skips an existing admin) and runs pending migrations first.
     command: ['sh', '-c', 'node dist/seed/seed-admin.js && exec node dist/main.js']
+    # Listening implies the admin seed above has finished.
+    healthcheck:
+      <<: *healthcheck
+      test: node -e "require('net').connect(4001).on('connect', () => process.exit(0)).on('error', () => process.exit(1))"
 
   attendance-service:
     <<: *service
@@ -54,12 +74,10 @@ services:
     image: wfh-attendance/attendance-service
     depends_on:
       db: { condition: service_healthy }
-    environment:
-      DB_HOST: db
-      DB_USER: attendance_user
-      DB_PASS: attendance_pass
-      DB_NAME: attendance_db
-      WORK_TIMEZONE: ${WORK_TIMEZONE:-Asia/Jakarta}
+    environment: *attendance-db-env
+    healthcheck:
+      <<: *healthcheck
+      test: node -e "require('net').connect(4002).on('connect', () => process.exit(0)).on('error', () => process.exit(1))"
 
   gateway:
     <<: *service
@@ -67,7 +85,9 @@ services:
       <<: *service-build
       args: { APP: gateway }
     image: wfh-attendance/gateway
-    depends_on: [employees-service, attendance-service]
+    depends_on:
+      employees-service: { condition: service_healthy }
+      attendance-service: { condition: service_healthy }
     environment:
       # Demo default so the stack starts without setup; set JWT_SECRET for anything real.
       JWT_SECRET: ${JWT_SECRET:-insecure-demo-secret-change-me-0123456789}
@@ -78,6 +98,10 @@ services:
       API_DOCS_ENABLED: ${API_DOCS_ENABLED:-true}
     volumes:
       - uploads:/data/uploads
+    # Any HTTP response (an unauthenticated 401 here) means the gateway is serving.
+    healthcheck:
+      <<: *healthcheck
+      test: node -e "fetch('http://127.0.0.1:3000/api/auth/me').then(() => process.exit(0), () => process.exit(1))"
 
   web:
     build:
@@ -88,6 +112,22 @@ services:
     depends_on: [gateway]
     ports:
       - '${WEB_PORT:-8080}:80'
+
+  # Idempotent: re-running skips employees and check-ins that already exist.
+  demo-seed:
+    build:
+      context: .
+      target: demo-seed
+    image: wfh-attendance/demo-seed
+    profiles: [demo]
+    depends_on:
+      gateway: { condition: service_healthy }
+    environment:
+      <<: [*admin-env, *attendance-db-env]
+      SEED_API_URL: http://gateway:3000/api
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - uploads:/data/uploads
 
 volumes:
   db_data:

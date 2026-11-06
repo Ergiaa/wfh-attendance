@@ -3,6 +3,7 @@
 # Builds every image from the monorepo root:
 #   --target service --build-arg APP=<gateway|employees-service|attendance-service>
 #   --target web
+#   --target demo-seed
 
 FROM node:24-slim AS base
 WORKDIR /app
@@ -40,6 +41,14 @@ RUN mkdir -p /data/uploads && chown node:node /data/uploads
 WORKDIR /app/apps/${APP}
 USER node
 CMD ["node", "dist/main.js"]
+
+# One-off demo data loader (`docker compose --profile demo ...`). Reuses the build stage, which
+# already has the root dev dependencies the script needs (mysql2, uuid).
+FROM build AS demo-seed
+COPY scripts scripts
+RUN mkdir -p /data/uploads && chown node:node /data/uploads
+USER node
+CMD ["node", "scripts/seed-demo.mjs"]
 
 FROM nginx:1.27-alpine AS web
 COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf

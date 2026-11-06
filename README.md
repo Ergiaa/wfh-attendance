@@ -34,8 +34,9 @@ To run a single service in its own terminal instead, use `npm run dev:employees`
 Needs only Docker (with Compose v2); no Node or `npm run setup` on the host.
 
 ```bash
-docker compose up --build -d   # MySQL, both services, gateway and web
-docker compose down            # stop (add -v to also wipe the database and photos)
+docker compose up --build -d                  # MySQL, both services, gateway and web
+docker compose --profile demo up --build -d   # the same, plus demo employees and attendance
+docker compose --profile demo down            # stop all (add -v to also wipe the database and photos)
 ```
 
 Open <http://localhost:8080>. nginx serves the built web app and proxies `/api` to the gateway,
@@ -43,10 +44,15 @@ so the API and its docs are at `http://localhost:8080/api` too. On first boot th
 runs migrations and seeds the HRD admin; later boots skip the seed. Check-in photos are kept in the
 `uploads` volume.
 
+The `demo` profile adds a one-off `demo-seed` container that runs the same script as
+`npm run db:seed:demo` once the gateway is up, then exits. It's idempotent, so it can be left in the
+command or re-run on its own with `docker compose --profile demo run --rm demo-seed`.
+Keep `--profile demo` on `down`, or its exited container is left behind and holds the photos
+volume.
+
 Defaults are set for a local demo. Override them with shell variables or a root `.env`:
 `JWT_SECRET` (**set this outside a demo**), `WEB_PORT` (8080), `SEED_ADMIN_EMAIL`,
-`SEED_ADMIN_PASSWORD`, `WORK_TIMEZONE` and `API_DOCS_ENABLED`. `npm run db:seed:demo` targets the
-`npm run dev` setup, not this stack.
+`SEED_ADMIN_PASSWORD`, `WORK_TIMEZONE` and `API_DOCS_ENABLED`.
 
 ## Login credentials
 
@@ -57,7 +63,7 @@ in `apps/employees-service/.env`):
 | --------- | ----------------- | -------------- |
 | HRD admin | `admin@wfh.local` | `ChangeMe123!` |
 
-After `npm run db:seed:demo`, these accounts also exist, all with the password `Password123!`:
+After `npm run db:seed:demo` (or the Docker `demo` profile), these accounts also exist, all with the password `Password123!`:
 
 | Role      | Email                      | Notes                             |
 | --------- | -------------------------- | --------------------------------- |

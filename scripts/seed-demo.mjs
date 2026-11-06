@@ -2,10 +2,13 @@
 // employees and check-ins that already exist.
 //
 // Employees go through the gateway API so they get the real validation and password hashing,
-// which means the stack must be running (`npm run dev`). Check-ins are inserted straight into
-// attendance_db because the API only ever records "now"; each gets a generated photo in the
-// gateway's upload directory so thumbnails load like real ones.
-import { readFileSync } from 'node:fs';
+// which means the stack must be running. Check-ins are inserted straight into attendance_db
+// because the API only ever records "now"; each gets a generated photo in the gateway's upload
+// directory so thumbnails load like real ones.
+//
+// Settings come from the apps' .env files (the `npm run dev` setup), and environment variables of
+// the same names override them (the `demo-seed` service in docker-compose.yml).
+import { existsSync, readFileSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { parseEnv } from 'node:util';
@@ -39,14 +42,33 @@ const EMPLOYEES = [
 ];
 
 const root = resolve(import.meta.dirname, '..');
-const loadEnv = (app) => parseEnv(readFileSync(resolve(root, 'apps', app, '.env'), 'utf8'));
+const loadEnv = (app) => {
+  const path = resolve(root, 'apps', app, '.env');
+  return existsSync(path) ? parseEnv(readFileSync(path, 'utf8')) : {};
+};
 const gatewayEnv = loadEnv('gateway');
 const employeesEnv = loadEnv('employees-service');
 const attendanceEnv = loadEnv('attendance-service');
+const { env } = process;
 
-const API = `http://localhost:${gatewayEnv.PORT ?? 3000}/api`;
-const UPLOAD_DIR = resolve(root, 'apps/gateway', gatewayEnv.UPLOAD_DIR ?? 'uploads');
-const TIME_ZONE = attendanceEnv.WORK_TIMEZONE ?? 'Asia/Jakarta';
+const API = env.SEED_API_URL ?? `http://localhost:${gatewayEnv.PORT ?? 3000}/api`;
+const UPLOAD_DIR = resolve(
+  root,
+  'apps/gateway',
+  env.UPLOAD_DIR ?? gatewayEnv.UPLOAD_DIR ?? 'uploads',
+);
+const TIME_ZONE = env.WORK_TIMEZONE ?? attendanceEnv.WORK_TIMEZONE ?? 'Asia/Jakarta';
+const ADMIN = {
+  email: env.SEED_ADMIN_EMAIL ?? employeesEnv.SEED_ADMIN_EMAIL,
+  password: env.SEED_ADMIN_PASSWORD ?? employeesEnv.SEED_ADMIN_PASSWORD,
+};
+const ATTENDANCE_DB = {
+  host: env.DB_HOST ?? attendanceEnv.DB_HOST ?? 'localhost',
+  port: Number(env.DB_PORT ?? attendanceEnv.DB_PORT ?? 3306),
+  user: env.DB_USER ?? attendanceEnv.DB_USER,
+  password: env.DB_PASS ?? attendanceEnv.DB_PASS,
+  database: env.DB_NAME ?? attendanceEnv.DB_NAME,
+};
 
 main().catch((error) => {
   console.error(`\nDemo seed failed: ${error.message}`);
@@ -61,11 +83,7 @@ async function main() {
   }
 
   const db = await mysql.createConnection({
-    host: attendanceEnv.DB_HOST,
-    port: Number(attendanceEnv.DB_PORT),
-    user: attendanceEnv.DB_USER,
-    password: attendanceEnv.DB_PASS,
-    database: attendanceEnv.DB_NAME,
+    ...ATTENDANCE_DB,
     timezone: 'Z',
     dateStrings: true,
   });
@@ -95,13 +113,13 @@ async function login() {
   try {
     const { accessToken } = await api(null, '/auth/login', {
       method: 'POST',
-      body: { email: employeesEnv.SEED_ADMIN_EMAIL, password: employeesEnv.SEED_ADMIN_PASSWORD },
+      body: ADMIN,
     });
     return accessToken;
   } catch (error) {
     if (error.cause?.code === 'ECONNREFUSED') {
       throw new Error(
-        `Can't reach the gateway at ${API}. Start the app with \`npm run dev\` first.`,
+        `Can't reach the gateway at ${API}. Start the app (\`npm run dev\` or Docker) first.`,
       );
     }
     throw error;
