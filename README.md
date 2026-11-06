@@ -66,6 +66,30 @@ After login, `/` redirects HRD admins to `/admin/employees` and employees to `/c
 | `/admin/employees`  | HRD    | Employee list with search; add, edit, deactivate and delete; link to their attendance  |
 | `/admin/attendance` | HRD    | View-only attendance of all employees: search, date range, per-employee filter, photos |
 
+### Screenshots
+
+**Check in**: before checking in, take a photo with the camera or upload one; the time is
+recorded by the server.
+
+![Check-in page before checking in](docs/empty_check_in.png)
+
+Once checked in, today's record and photo are shown instead.
+
+![Check-in page after checking in](docs/check_in.png)
+
+**My attendance**: the employee's own history, filterable by date.
+
+![My attendance page](docs/my_attendance.png)
+
+**Employees (HRD)**: search, add, edit, deactivate or delete employees, or jump to their
+attendance.
+
+![Employee management page](docs/employee_page.png)
+
+**Attendance (HRD)**: view-only check-ins from every employee, with search and date filters.
+
+![HRD attendance page](docs/attendance_page.png)
+
 ## API
 
 Interactive docs (Swagger UI) are at <http://localhost:3000/api/docs>, with the OpenAPI JSON at
