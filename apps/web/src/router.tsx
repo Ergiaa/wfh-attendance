@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router';
 import { GuestOnly, HomeRedirect, RequireAuth, RequireRole } from './auth/guards';
 import { AppLayout } from './layouts/AppLayout';
 import { HRD_ADMIN } from './lib/roles';
+import { EmployeesPage } from './pages/admin/EmployeesPage';
 import { CheckInPage } from './pages/CheckInPage';
 import { ComingSoon } from './pages/ComingSoon';
 import { LoginPage } from './pages/LoginPage';
@@ -31,7 +32,7 @@ export const router = createBrowserRouter([
                 path: 'admin',
                 element: <RequireRole role={HRD_ADMIN} />,
                 children: [
-                  { path: 'employees', element: <ComingSoon title="Employees" /> },
+                  { path: 'employees', element: <EmployeesPage /> },
                   { path: 'attendance', element: <ComingSoon title="Attendance" /> },
                 ],
               },

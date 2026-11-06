@@ -42,6 +42,11 @@ export function formatWorkDate(workDate: string): string {
   return longDate.format(new Date(`${workDate}T00:00:00Z`));
 }
 
+/** "Thu, 6 Nov 2026" for a timestamp, taking the calendar day in the work timezone. */
+export function formatDate(iso: string): string {
+  return formatWorkDate(isoDate.format(new Date(iso)));
+}
+
 /** "08:15" in the work timezone. */
 export function formatTime(iso: string | Date, { seconds = false } = {}): string {
   return (seconds ? timeWithSeconds : time).format(typeof iso === 'string' ? new Date(iso) : iso);
