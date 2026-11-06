@@ -4,4 +4,8 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    // Same-origin in dev: no CORS, and the API's relative photo URLs resolve as-is.
+    proxy: { '/api': 'http://localhost:3000' },
+  },
 });

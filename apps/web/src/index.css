@@ -4,19 +4,27 @@
 /*
  * Components use these semantic tokens (bg-surface, text-fg-muted, bg-primary, ...) rather than
  * raw palette colors, so dark mode and any rebrand are a change here only.
+ *
+ * Brand: Midnight Black #030407, Electric Cobalt #1558C9, Acid Lime #D4FF24.
+ * Lime is too light to read as text on white (1.2:1), so it only appears as a fill or ring;
+ * cobalt text is too dim on midnight (3.2:1), so dark mode reads blue text from --primary-ink.
  */
 :root {
-  --bg: oklch(0.985 0.002 247);
-  --surface: oklch(1 0 0);
-  --surface-muted: oklch(0.967 0.003 265);
-  --border: oklch(0.922 0.006 265);
-  --fg: oklch(0.21 0.034 265);
-  --fg-muted: oklch(0.551 0.027 264);
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-muted: #eef0f3;
+  --border: #e1e4ea;
+  --fg: #030407;
+  --fg-muted: #5b6472;
 
-  --primary: oklch(0.511 0.163 268);
-  --primary-hover: oklch(0.457 0.165 268);
-  --primary-fg: oklch(1 0 0);
-  --primary-soft: oklch(0.962 0.018 272);
+  --primary: #1558c9;
+  --primary-hover: #1149a8;
+  --primary-fg: #ffffff;
+  --primary-soft: #e8effb;
+  --primary-ink: #1558c9;
+
+  --accent: #d4ff24;
+  --accent-fg: #030407;
 
   --success: oklch(0.527 0.137 150);
   --success-soft: oklch(0.962 0.044 157);
@@ -24,34 +32,40 @@
   --warning-soft: oklch(0.973 0.071 103);
   --danger: oklch(0.577 0.215 27);
   --danger-hover: oklch(0.505 0.213 27);
+  --danger-fg: #ffffff;
   --danger-soft: oklch(0.971 0.013 17);
 
-  --ring: oklch(0.585 0.204 268);
+  --ring: #1558c9;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: oklch(0.145 0.015 265);
-    --surface: oklch(0.19 0.02 265);
-    --surface-muted: oklch(0.235 0.022 265);
-    --border: oklch(0.3 0.025 265);
-    --fg: oklch(0.967 0.003 265);
-    --fg-muted: oklch(0.707 0.022 261);
+    --bg: #030407;
+    --surface: #0a0c11;
+    --surface-muted: #12151c;
+    --border: #1f232c;
+    --fg: #f2f4f7;
+    --fg-muted: #8a93a3;
 
-    --primary: oklch(0.673 0.182 276);
-    --primary-hover: oklch(0.723 0.16 276);
-    --primary-fg: oklch(0.145 0.015 265);
-    --primary-soft: oklch(0.28 0.07 272);
+    --primary: #1558c9;
+    --primary-hover: #2566d6;
+    --primary-fg: #ffffff;
+    --primary-soft: #0b1a36;
+    --primary-ink: #6a9cf6;
+
+    --accent: #d4ff24;
+    --accent-fg: #030407;
 
     --success: oklch(0.765 0.177 160);
-    --success-soft: oklch(0.27 0.05 160);
+    --success-soft: oklch(0.24 0.05 160);
     --warning: oklch(0.828 0.189 84);
-    --warning-soft: oklch(0.29 0.06 70);
+    --warning-soft: oklch(0.26 0.06 70);
     --danger: oklch(0.704 0.191 22);
     --danger-hover: oklch(0.75 0.17 22);
-    --danger-soft: oklch(0.28 0.07 22);
+    --danger-fg: #030407;
+    --danger-soft: oklch(0.25 0.07 22);
 
-    --ring: oklch(0.673 0.182 276);
+    --ring: #d4ff24;
   }
 }
 
@@ -69,6 +83,10 @@
   --color-primary-hover: var(--primary-hover);
   --color-primary-fg: var(--primary-fg);
   --color-primary-soft: var(--primary-soft);
+  --color-primary-ink: var(--primary-ink);
+
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
 
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
@@ -76,6 +94,7 @@
   --color-warning-soft: var(--warning-soft);
   --color-danger: var(--danger);
   --color-danger-hover: var(--danger-hover);
+  --color-danger-fg: var(--danger-fg);
   --color-danger-soft: var(--danger-soft);
 
   --color-ring: var(--ring);
@@ -103,5 +122,9 @@
 
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  ::selection {
+    @apply bg-accent text-accent-fg;
   }
 }
