@@ -44,7 +44,10 @@ export function Table<T>({
 
   return (
     <div className="overflow-hidden rounded-xl border bg-surface shadow-xs">
-      <div className="overflow-x-auto">
+      {/* `relative` makes this the containing block for sr-only (absolutely positioned) header
+          text; otherwise it's placed against the page, escapes the scroll clipping and widens
+          the whole page on narrow screens. */}
+      <div className="relative overflow-x-auto">
         <table
           aria-busy={loading || stale || undefined}
           className={cn('w-full text-sm transition-opacity', stale && 'opacity-60')}
