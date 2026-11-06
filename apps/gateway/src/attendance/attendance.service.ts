@@ -1,10 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Role, type AttendanceView, type Paginated } from '@wfh/contracts';
 import type { ListAttendanceDto, ListMyAttendanceDto } from '@wfh/contracts/dto';
 import { access } from 'node:fs/promises';
 
 import type { AuthUser } from '../auth/auth-user';
-import { EmployeesClient } from '../employees/employees.client';
 import { mimeTypeForKey } from '../photos/image-type';
 import { PhotoStorage } from '../photos/photo-storage.service';
 import { AttendanceClient } from './attendance.client';
@@ -19,22 +18,16 @@ export interface StoredPhoto {
 export class AttendanceService {
   constructor(
     private readonly attendance: AttendanceClient,
-    private readonly employees: EmployeesClient,
     private readonly photos: PhotoStorage,
   ) {}
 
   async checkIn(user: AuthUser, photo: Buffer): Promise<AttendanceView> {
-    const employee = await this.employees.findOne(user.id);
-    if (!employee.isActive) {
-      throw new ForbiddenException('Your account is inactive');
-    }
-
     const photoKey = await this.photos.save(photo);
     try {
       const record = await this.attendance.checkIn({
-        employeeId: employee.id,
-        employeeCode: employee.employeeCode,
-        employeeName: employee.name,
+        employeeId: user.id,
+        employeeCode: user.employeeCode,
+        employeeName: user.name,
         photoKey,
       });
       return toAttendanceView(record);

@@ -29,16 +29,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(
     () =>
-      onUnauthorized(() => {
+      onUnauthorized((error) => {
         // Parallel requests can all 401; only the first one still finds a token to clear.
         if (getToken() === null) {
           return;
         }
         logout();
-        toast.show({
-          title: 'Your session has expired',
-          description: 'Sign in again to continue.',
-        });
+        // The server says why: an expired token, or an account deactivated or deleted by HRD.
+        toast.show({ title: error.message, description: "You've been signed out." });
       }),
     [logout, toast],
   );

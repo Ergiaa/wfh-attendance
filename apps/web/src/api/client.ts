@@ -22,9 +22,11 @@ export interface RequestOptions {
   signal?: AbortSignal;
 }
 
-let unauthorizedHandler: (() => void) | undefined;
+type UnauthorizedHandler = (error: ApiError) => void;
 
-export function onUnauthorized(handler: () => void): () => void {
+let unauthorizedHandler: UnauthorizedHandler | undefined;
+
+export function onUnauthorized(handler: UnauthorizedHandler): () => void {
   unauthorizedHandler = handler;
   return () => {
     if (unauthorizedHandler === handler) {
@@ -80,11 +82,12 @@ async function send(
   }
 
   if (!response.ok) {
+    const error = await toApiError(response);
     // Only an existing session can expire; a 401 without a token is a failed login.
     if (response.status === 401 && token) {
-      unauthorizedHandler?.();
+      unauthorizedHandler?.(error);
     }
-    throw await toApiError(response);
+    throw error;
   }
   return response;
 }

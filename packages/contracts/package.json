@@ -22,10 +22,12 @@
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
   },
   "peerDependencies": {
+    "@nestjs/swagger": "^12.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1"
   },
   "devDependencies": {
+    "@nestjs/swagger": "^12.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1"
   }

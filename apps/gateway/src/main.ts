@@ -5,6 +5,7 @@ import { validationPipeOptions } from '@wfh/nest-common';
 
 import { AppModule } from './app.module';
 import type { Env } from './config/env';
+import { setupSwagger } from './docs/setup-swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +15,10 @@ async function bootstrap() {
   app.enableCors({ origin: config.get('CORS_ORIGIN', { infer: true }) });
   app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
   app.enableShutdownHooks();
+
+  if (config.get('NODE_ENV', { infer: true }) !== 'production') {
+    setupSwagger(app);
+  }
 
   await app.listen(config.get('PORT', { infer: true }));
 }
